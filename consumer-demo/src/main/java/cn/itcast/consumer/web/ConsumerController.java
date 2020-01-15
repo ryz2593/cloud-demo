@@ -1,6 +1,10 @@
 package cn.itcast.consumer.web;
 
 import cn.itcast.consumer.pojo.User;
+import com.netflix.hystrix.HystrixCommandProperties;
+import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -19,6 +23,8 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("consumer")
+//给controller中的所有方法都添加降级处理
+@DefaultProperties(defaultFallback = "defaultFallback")
 public class ConsumerController {
     @Autowired
     private RestTemplate restTemplate;
@@ -30,20 +36,51 @@ public class ConsumerController {
 //    private RibbonLoadBalancerClient client;
 
     @GetMapping("{id}")
-    public User queryById(@PathVariable("id") Long id) {
-        //根据服务id，获取实例
-        //List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
-        //从实例中获取ip地址和端口
-        //ServiceInstance instance = instance.get(0);
-        //这里需要负载均衡算法 来获取一个实例
-
-        //方式1
-//        ServiceInstance instance = client.choose("user-service");
-//        String url = "http://"+instance.getHost() + ":" + instance.getPort()+"/user/" + id;
-//        System.out.println("url = " + url);
-        //方式2
+    //单个方法降级处理
+    //@HystrixCommand(fallbackMethod = "queryByIdFallback")
+    //设置超时时间，这个是仅仅为这个方法设置的，如果想要设置全局的超时时间，需要在yaml文件中配置，然后这里只加@HystrixCommand就行了
+//    @HystrixCommand(commandProperties = {
+//            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000")
+//    })
+    @HystrixCommand
+    public String queryById(@PathVariable("id") Long id) {
         String url = "http://user-service/user/" + id;
-        User user = restTemplate.getForObject(url, User.class);
+        String user = restTemplate.getForObject(url, String.class);
         return user;
     }
+
+    /**
+     * 熔断方法的参数列表和返回值类型必须原方法保持一致
+     * @param id
+     * @return
+     */
+    public String queryByIdFallback(Long id) {
+        return "服务器拥挤";
+    }
+
+    /**
+     * 通用降级方法
+     * @return
+     */
+    public String defaultFallback() {
+        return "服务器拥挤";
+    }
+
+//    @GetMapping("{id}")
+//    public User queryById(@PathVariable("id") Long id) {
+//        //根据服务id，获取实例
+//        //List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
+//        //从实例中获取ip地址和端口
+//        //ServiceInstance instance = instance.get(0);
+//        //这里需要负载均衡算法 来获取一个实例
+//
+//        //方式1
+////        ServiceInstance instance = client.choose("user-service");
+////        String url = "http://"+instance.getHost() + ":" + instance.getPort()+"/user/" + id;
+////        System.out.println("url = " + url);
+//        //方式2
+//        String url = "http://user-service/user/" + id;
+//        User user = restTemplate.getForObject(url, User.class);
+//        return user;
+//    }
 }
