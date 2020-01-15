@@ -8,3 +8,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:10086/eureka,http://127.0.0.1:10087/eureka
+    #拉取服务周期5s
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1

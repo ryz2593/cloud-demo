@@ -1,5 +1,5 @@
 server:
-  port: 10087
+  port: 10086
 #应用名字
 spring:
   application:
@@ -8,7 +8,6 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://127.0.0.1:10086/eureka
-  instance:
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
+      defaultZone: http://127.0.0.1:10087/eureka
+    #不注册自己
+    register-with-eureka: false
