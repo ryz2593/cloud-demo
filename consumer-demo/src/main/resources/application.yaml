@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8088
 #jdbc数据库连接参数
 spring:
   application:
@@ -13,3 +13,7 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: 127.0.0.1
+#为user-service 设置负载均衡策略
+user-service:
+  ribbon:
+    NFLoadBalanceRuleClassName: com.netflix.loadbalancer.RandomRule
