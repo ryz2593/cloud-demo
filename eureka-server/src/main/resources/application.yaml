@@ -1,0 +1,14 @@
+server:
+  port: 10086
+#应用名字
+spring:
+  application:
+    name: eureka-server
+#如果是单台eureka一定要配置这个否则会报错
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
