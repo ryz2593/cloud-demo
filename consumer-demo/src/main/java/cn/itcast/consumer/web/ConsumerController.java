@@ -1,21 +1,14 @@
 package cn.itcast.consumer.web;
 
-import cn.itcast.consumer.pojo.User;
-import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.netflix.ribbon.RibbonLoadBalancerClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 /**
  * @author ryz2593
@@ -42,8 +35,18 @@ public class ConsumerController {
 //    @HystrixCommand(commandProperties = {
 //            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000")
 //    })
-    @HystrixCommand
+    @HystrixCommand(
+            commandProperties = {
+                    //设置触发熔断的最小请求次数，休眠时长，失败请求百分比
+                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),
+                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),
+                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")
+            }
+    )
     public String queryById(@PathVariable("id") Long id) {
+        if (id % 2 == 0) {
+            throw new RuntimeException("");
+        }
         String url = "http://user-service/user/" + id;
         String user = restTemplate.getForObject(url, String.class);
         return user;
@@ -51,6 +54,7 @@ public class ConsumerController {
 
     /**
      * 熔断方法的参数列表和返回值类型必须原方法保持一致
+     *
      * @param id
      * @return
      */
@@ -60,6 +64,7 @@ public class ConsumerController {
 
     /**
      * 通用降级方法
+     *
      * @return
      */
     public String defaultFallback() {
