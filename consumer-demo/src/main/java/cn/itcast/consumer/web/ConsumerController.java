@@ -1,8 +1,7 @@
 package cn.itcast.consumer.web;
 
-import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import cn.itcast.consumer.client.UserClient;
+import cn.itcast.consumer.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +16,13 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("consumer")
 //给controller中的所有方法都添加降级处理
-@DefaultProperties(defaultFallback = "defaultFallback")
+//@DefaultProperties(defaultFallback = "defaultFallback")
 public class ConsumerController {
+//    @Autowired
+//    private RestTemplate restTemplate;
+
     @Autowired
-    private RestTemplate restTemplate;
+    private UserClient userClient;
 //    @Autowired
 //    private DiscoveryClient discoveryClient;
 
@@ -28,29 +30,52 @@ public class ConsumerController {
 //    @Autowired
 //    private RibbonLoadBalancerClient client;
 
+    /**
+     * 正常调用
+     * @param id
+     * @return
+     */
+//    @GetMapping("{id}")
+//    public String queryByIds(@PathVariable("id") Long id) {
+//        String url = "http://user-service/user/" + id;
+//        String user = restTemplate.getForObject(url, String.class);
+//        return user;
+//    }
+
+    /**
+     * 使用feign调用
+     * @param id
+     * @return
+     */
     @GetMapping("{id}")
-    //单个方法降级处理
-    //@HystrixCommand(fallbackMethod = "queryByIdFallback")
-    //设置超时时间，这个是仅仅为这个方法设置的，如果想要设置全局的超时时间，需要在yaml文件中配置，然后这里只加@HystrixCommand就行了
-//    @HystrixCommand(commandProperties = {
-//            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000")
-//    })
-    @HystrixCommand(
-            commandProperties = {
-                    //设置触发熔断的最小请求次数，休眠时长，失败请求百分比
-                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),
-                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),
-                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")
-            }
-    )
-    public String queryById(@PathVariable("id") Long id) {
-        if (id % 2 == 0) {
-            throw new RuntimeException("");
-        }
-        String url = "http://user-service/user/" + id;
-        String user = restTemplate.getForObject(url, String.class);
-        return user;
+    public User queryByUserId(@PathVariable("id") Long id) {
+        return userClient.queryById(id);
     }
+
+
+//    @GetMapping("{id}")
+//    //单个方法降级处理
+//    //@HystrixCommand(fallbackMethod = "queryByIdFallback")
+//    //设置超时时间，这个是仅仅为这个方法设置的，如果想要设置全局的超时时间，需要在yaml文件中配置，然后这里只加@HystrixCommand就行了
+////    @HystrixCommand(commandProperties = {
+////            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "3000")
+////    })
+//    @HystrixCommand(
+//            commandProperties = {
+//                    //设置触发熔断的最小请求次数，休眠时长，失败请求百分比
+//                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),
+//                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "10000"),
+//                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")
+//            }
+//    )
+//    public String queryById(@PathVariable("id") Long id) {
+//        if (id % 2 == 0) {
+//            throw new RuntimeException("");
+//        }
+//        String url = "http://user-service/user/" + id;
+//        String user = restTemplate.getForObject(url, String.class);
+//        return user;
+//    }
 
     /**
      * 熔断方法的参数列表和返回值类型必须原方法保持一致
@@ -70,7 +95,6 @@ public class ConsumerController {
     public String defaultFallback() {
         return "服务器拥挤";
     }
-
 //    @GetMapping("{id}")
 //    public User queryById(@PathVariable("id") Long id) {
 //        //根据服务id，获取实例

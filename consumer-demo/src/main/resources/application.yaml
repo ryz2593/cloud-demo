@@ -12,6 +12,10 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: 127.0.0.1
+ribbon:
+  ConnectionTimeOut: 500
+  ReadTimeOut: 2000
+
 #为user-service 设置负载均衡策略，默认为轮训策略
 user-service:
   ribbon:

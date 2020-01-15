@@ -33,6 +33,13 @@
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
 
+        <!--feign，依赖里面包含了ribbon，hystrix，上面两个依赖可以不用引入了
+        通过springMVC方式得知请求url，请求方式，请求参数，返回类型-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
