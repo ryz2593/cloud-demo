@@ -11,3 +11,8 @@ eureka:
       defaultZone: http://127.0.0.1:10087/eureka
     #不注册自己
     register-with-eureka: false
+  server:
+    #每个30s清理一次失效的服务，失效剔除
+    eviction-interval-timer-in-ms: 300000
+    #可以关闭自我保护模式，默认为开启
+    enable-self-preservation: false
