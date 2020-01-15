@@ -31,6 +31,7 @@ public class ConsumerController {
         //从实例中获取ip地址和端口
         ServiceInstance instance = instances.get(0);
         String url = "http://"+instance.getHost() + ":" + instance.getPort()+"/user/" + id;
+        System.out.println("url = " + url);
         User user = restTemplate.getForObject(url, User.class);
         return user;
     }
