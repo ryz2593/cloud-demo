@@ -1,3 +1,4 @@
 user-service/target/
 consumer-demo/target/
 eureka-server/target/
+gateway/target/
