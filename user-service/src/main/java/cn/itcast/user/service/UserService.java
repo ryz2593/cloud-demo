@@ -16,7 +16,7 @@ public class UserService {
 
     public User queryById(Long id) {
         try {
-            Thread.sleep(2000L);
+            Thread.sleep(20L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
