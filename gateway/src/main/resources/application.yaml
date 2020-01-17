@@ -1,7 +1,24 @@
 server:
   port: 10010
+eureka:
+  client:
+    service-url:
+      #多个用逗号分隔http://127.0.0.1:10086/eureka,http://127.0.0.1:10087/eureka
+      defaultZone: http://127.0.0.1:10086/eureka
+spring:
+  application:
+    name: gateway
+#zuul会将ereka上所有注册的服务创建一套key-value映射 即使不配置也可以访问,但是访问的时候要加上servieId，因此大部分时候我们都用自定义设置
 zuul:
   routes:
-    hehe:
-      path: /user-service/**
-      url: http://127.0.0.1:8081
+    prifix: /api  #一般不配置这个 配置了这个访问路径上要加上/api
+    #key 是服务id   value是映射路径
+    #访问路径/user/9 而不是 /user/user/9
+    user-service:
+      path: /user/**
+      serviceId: user-service
+      #局部去除路由前缀
+      strip-prefix: false
+  #要忽略的服务，是一个集合
+  ignored-services:
+    - consumer-service
