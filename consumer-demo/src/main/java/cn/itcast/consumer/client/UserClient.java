@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @author ryz2593
  * @date 2020/1/15 17:04
  */
-@FeignClient("user-service")
+//熔断类----UserClientFallback
+@FeignClient(value = "user-service", fallback = UserClientFallback.class)
 public interface UserClient {
 
     @GetMapping("/user/{id}")
