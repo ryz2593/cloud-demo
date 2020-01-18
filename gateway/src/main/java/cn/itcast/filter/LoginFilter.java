@@ -45,6 +45,7 @@ public class LoginFilter extends ZuulFilter {
         if (StringUtils.isBlank(token)) {
             //不存在，未登录，则拦截
             ctx.setSendZuulResponse(false);
+            //设置返回的状态码为403
             ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
         }
         return null;
