@@ -22,3 +22,13 @@ zuul:
   #要忽略的服务，是一个集合
   ignored-services:
     - consumer-service
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+ribbon:
+  ConnectionTimeOut: 500
+  ReadTimeOut: 4000
