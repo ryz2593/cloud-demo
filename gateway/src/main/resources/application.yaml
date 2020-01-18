@@ -29,6 +29,8 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 6000
+#ribbon的超时时长，默认情况下真实值是 (readTimeout + connectTimeout)*2, 必须小于hystrix时长
 ribbon:
-  ConnectionTimeOut: 500
-  ReadTimeOut: 4000
+  ConnectionTimeout: 500
+  ReadTimeOut: 2000
+  #MaxAutoRetriesNextServer: 0 #不重试
