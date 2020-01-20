@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(value = "user-service", fallback = UserClientFallback.class)
 public interface UserClient {
 
+    /**
+     * 通过id查询用户
+     * @param id
+     * @return
+     */
     @GetMapping("/user/{id}")
     User queryById(@PathVariable("id") Long id);
 }
